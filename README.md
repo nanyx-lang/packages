@@ -75,7 +75,14 @@ A version is a release of the package's repository that has:
 Until the `.nyxpkg` format is settled ([nanyx-lang/nanyx#863](https://github.com/nanyx-lang/nanyx/issues/863)),
 the asset is a **zip of the package's sources**, with the package's `.nyxp` manifest at the zip's root or inside its
 one top-level folder. The manifest's `name` and `version` must match the release; a release that doesn't is
-reported and not recorded.
+reported and not recorded. From the package's folder, for example:
+
+```sh
+tar --format zip -cf acme.web-1.2.0.nyxpkg acme.web.nyxp src
+gh release create v1.2.0 acme.web-1.2.0.nyxpkg
+```
+
+(`tar -a` chooses the format from the file's extension, and doesn't know `.nyxpkg`, so name the format.)
 
 Draft releases are ignored. Pre-releases are recorded like any other release.
 
