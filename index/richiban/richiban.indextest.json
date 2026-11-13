@@ -1,0 +1,15 @@
+{
+  "name": "richiban.indextest",
+  "repository": "https://github.com/Richiban/nanyx-index-test",
+  "versions": [
+    {
+      "version": "0.1.0",
+      "url": "https://github.com/Richiban/nanyx-index-test/releases/download/v0.1.0/richiban.indextest-0.1.0.nyxpkg",
+      "sha256": "e4191e14366ab31d87851d58043129ae51edffe1b9840a5558fbd1fb3368c053",
+      "nanyx": null,
+      "dependencies": {},
+      "yanked": false,
+      "available": true
+    }
+  ]
+}
