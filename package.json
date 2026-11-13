@@ -1,0 +1,11 @@
+{
+  "name": "nanyx-packages",
+  "private": true,
+  "description": "The workflows' scripts for the Nanyx package index. They use only Node's own modules.",
+  "engines": {
+    "node": ">=22.2"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}
