@@ -22,10 +22,10 @@ jobs:
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 22
+          node-version: 24
       - name: Read releases
         run: node scripts/sync.mjs
         env:
@@ -33,6 +33,7 @@ jobs:
       - name: Commit index changes
         id: commit
         run: |
+          mkdir -p index
           git add index
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -46,7 +47,7 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
       - name: Build the site
         run: node scripts/build-site.mjs _site
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
