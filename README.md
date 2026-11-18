@@ -130,4 +130,7 @@ request that changes anything else in an index file. Unyanking is the same chang
 GitHub disables scheduled workflows in a repository with no activity for 60 days. If the index stops updating,
 enable Sync again on the Actions tab and run it by hand.
 
-The scripts use only Node's own modules. Run their tests with `npm test`.
+The registry scripts use only Node's own modules. The site uses Astro, React and Tailwind, with the same theme as
+the Nanyx docs. Use Node 22.23.4 or newer, run `npm ci`, then `npm run dev` for local development. `npm run build` writes the Pages site to
+`_site`, including unchanged copies of `config.json` and `index/`; its base path is `/packages/`. Run the registry
+tests with `npm test` and the built-site checks with `npm run build && npm run test:site`.

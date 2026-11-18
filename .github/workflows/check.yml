@@ -16,8 +16,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+          cache: npm
+      - run: npm ci
       - name: Test the scripts
         run: npm test
+      - name: Build and test the site
+        run: npm run build && npm run test:site
       - name: Check registrations and yanks
         run: node scripts/check-pull-request.mjs "${{ github.event.pull_request.base.sha }}"
         env:
