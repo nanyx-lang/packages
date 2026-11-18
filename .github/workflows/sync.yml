@@ -26,6 +26,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+          cache: npm
+      - run: npm ci
       - name: Read releases
         run: node scripts/sync.mjs
         env:
@@ -46,7 +48,7 @@ jobs:
           git push origin HEAD:main
           echo "changed=true" >> "$GITHUB_OUTPUT"
       - name: Build the site
-        run: node scripts/build-site.mjs _site
+        run: npm run build
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
