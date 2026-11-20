@@ -58,8 +58,8 @@ Each package has one file, at `<index><namespace>/<name>.json`, where the namesp
 | `version` | A semantic version: `1.2.0` or `1.2.0-beta.1`. |
 | `url` | Where the version's asset is downloaded from. |
 | `sha256` | The asset's SHA-256, in hex, as it was when the version was first recorded. It never changes. |
-| `nanyx` | The oldest compiler the version builds with, from its manifest's `[package] nanyx`, or `null` if it gives none. |
-| `dependencies` | Its manifest's `[dependencies]`: package name to version requirement. |
+| `nanyx` | The oldest compiler the version builds with, from its manifest's `package.nanyx`, or `null` if it gives none. |
+| `dependencies` | Its manifest's `dependencies`, each `(package = …, version = …)`: package name to version requirement. |
 | `yanked` | `true` once the version has been yanked. New resolutions don't pick a yanked version, but a lockfile that names it still installs it. |
 | `available` | `false` while the version's release or asset is missing from GitHub. |
 
@@ -72,17 +72,35 @@ A version is a release of the package's repository that has:
 - a tag naming the version: `v1.2.0` or `1.2.0`. Other tags are ignored.
 - an asset named `<name>-<version>.nyxpkg`, such as `acme.web-1.2.0.nyxpkg`. Releases without it are ignored.
 
-Until the `.nyxpkg` format is settled ([nanyx-lang/nanyx#863](https://github.com/nanyx-lang/nanyx/issues/863)),
-the asset is a **zip of the package's sources**, with the package's `.nyxp` manifest at the zip's root or inside its
-one top-level folder. The manifest's `name` and `version` must match the release; a release that doesn't is
-reported and not recorded. From the package's folder, for example:
+Make the asset with `nanyx pack`, which writes `<name>-<version>.nyxpkg`: a zip of the package's `.nyxp` manifest,
+its sources and its `api.json`, the API its public modules export. From the package's folder, for example:
 
 ```sh
-tar --format zip -cf acme.web-1.2.0.nyxpkg acme.web.nyxp src
+nanyx pack
 gh release create v1.2.0 acme.web-1.2.0.nyxpkg
 ```
 
-(`tar -a` chooses the format from the file's extension, and doesn't know `.nyxpkg`, so name the format.)
+The sync reads the manifest with the compiler (`nanyx manifest --json`), so any manifest the compiler accepts can be
+read. A release is reported, and not recorded, if:
+
+- the manifest's `package.name` and `package.version` don't match the release.
+- its `package.repository`, if it gives one, isn't the repository the package is registered with.
+- it has a dependency found by its `path` or on GitHub: only dependencies from the index can be published.
+- it fails the release check.
+
+### The release check
+
+Versions are semantic, and the index enforces it. When a new version has a recorded version below it, the sync runs
+`nanyx api-check <older.nyxpkg> <newer.nyxpkg>`, where the older one is the newest recorded version below the new one
+that isn't yanked and is available. The compiler compares the two `api.json` files and refuses the new version if its
+number is too small for the changes: removing or changing something needs a new major version, adding something a
+new minor version (one place lower before `1.0.0`). A version that fails isn't recorded, and the report says what to
+fix. A package's first version isn't checked.
+
+Versions found in the same run are checked in order, each against the one before it. The older asset is downloaded
+again for the check. A version can't be checked if that asset no longer has its recorded SHA-256, if `api-check`
+exits with a usage error, or if the compiler can't run: it is reported, saying which, isn't recorded, and is tried
+again on the next run.
 
 Draft releases are ignored. Pre-releases are recorded like any other release.
 
@@ -122,9 +140,11 @@ request that changes anything else in an index file. Unyanking is the same chang
   added registrations and changes to index files.
 - **Sync** runs every hour, on every push to `main`, and by hand (Actions → Sync → Run workflow). For every
   registered package it reads the repository's releases, downloads each new version's asset, records its hash
-  and its manifest's fields, and commits the changed index files to `main` with the workflow's own token. Then it
-  publishes the site to Pages. Problems (a replaced asset, a release that has gone, a manifest that doesn't match)
-  are shown as warnings in the run's summary. A version whose release has gone is marked `"available": false`,
+  and its manifest's fields, checks the release, and commits the changed index files to `main` with the workflow's own
+  token. Then it publishes the site to Pages. It reads manifests and checks releases with the latest compiler
+  release (`compiler/<version>` in nanyx-lang/nanyx, its `linux-x64` archive), downloaded once per run; the run's log
+  and summary say which version. Problems (a replaced asset, a release that has gone, a manifest that doesn't match,
+  a failed release check) are shown as warnings in the run's summary. A version whose release has gone is marked `"available": false`,
   and back to `true` if the release returns; it is never removed.
 
 GitHub disables scheduled workflows in a repository with no activity for 60 days. If the index stops updating,
@@ -133,4 +153,5 @@ enable Sync again on the Actions tab and run it by hand.
 The registry scripts use only Node's own modules. The site uses Astro, React and Tailwind, with the same theme as
 the Nanyx docs. Use Node 22.23.4 or newer, run `npm ci`, then `npm run dev` for local development. `npm run build` writes the Pages site to
 `_site`, including unchanged copies of `config.json` and `index/`; its base path is `/packages/`. Run the registry
-tests with `npm test` and the built-site checks with `npm run build && npm run test:site`.
+tests with `npm test`; they run a fake compiler, `test/fake-nanyx/nanyx`, and need neither the network nor a real one.
+Run the built-site checks with `npm run build && npm run test:site`.

@@ -1,0 +1,22 @@
+{
+  "package": {
+    "name": "acme.web",
+    "version": "1.0.0"
+  },
+  "dependencies": [
+    {
+      "package": "acme.util",
+      "path": "../util"
+    },
+    {
+      "package": "acme.http",
+      "github": "acme/http",
+      "rev": "0123456789abcdef0123456789abcdef01234567"
+    },
+    {
+      "module": "retry",
+      "github": "acme/snippets/retry.nyx",
+      "rev": "0123456789abcdef0123456789abcdef01234567"
+    }
+  ]
+}

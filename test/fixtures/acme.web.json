@@ -1,0 +1,35 @@
+{
+  "package": {
+    "name": "acme.web",
+    "version": "1.2.0",
+    "nanyx": "0.14",
+    "repository": "https://github.com/acme/acme.web",
+    "sources": [
+      "src/**/*.nyx"
+    ]
+  },
+  "dependencies": [
+    {
+      "package": "acme.core",
+      "version": "^2.1"
+    },
+    {
+      "package": "acme.json",
+      "version": "1.0"
+    }
+  ],
+  "linters": [
+    {
+      "package": "nanyx.lint",
+      "version": "0.14.0",
+      "settings": {
+        "rules": {
+          "unusedBindings": "#error"
+        }
+      }
+    }
+  ],
+  "formatter": {
+    "lineWidth": 100
+  }
+}
