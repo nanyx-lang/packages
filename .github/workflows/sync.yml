@@ -28,6 +28,24 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # The sync reads manifests and checks releases with the latest compiler release, compiler/<version>.
+      - name: Download the latest compiler
+        run: |
+          tag="$(gh api 'repos/nanyx-lang/nanyx/releases?per_page=100' \
+            --jq '[.[] | select((.draft or .prerelease) | not) | select(.tag_name | startswith("compiler/"))][0].tag_name // ""')"
+          if [ -z "$tag" ]; then
+            echo "::error::nanyx-lang/nanyx has no compiler/<version> release"
+            exit 1
+          fi
+          version="${tag#compiler/}"
+          gh release download "$tag" --repo nanyx-lang/nanyx --pattern "nanyx-$version-linux-x64.tar.gz" --dir "$RUNNER_TEMP"
+          mkdir -p "$RUNNER_TEMP/nanyx"
+          tar -xzf "$RUNNER_TEMP/nanyx-$version-linux-x64.tar.gz" -C "$RUNNER_TEMP/nanyx"
+          echo "Using the Nanyx compiler $version, from the release $tag"
+          echo "NANYX=$RUNNER_TEMP/nanyx/nanyx" >> "$GITHUB_ENV"
+          echo "NANYX_VERSION=$version" >> "$GITHUB_ENV"
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Read releases
         run: node scripts/sync.mjs
         env:

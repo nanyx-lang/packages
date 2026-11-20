@@ -1,5 +1,7 @@
 // Helpers shared by the tests.
 
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { crc32, deflateRawSync } from "node:zlib";
 
 /** A zip holding `files`, a map from path to text, each entry deflated. */
@@ -43,11 +45,15 @@ export function makeZip(files) {
   return Buffer.concat([...locals, directory, end]);
 }
 
-/** A package archive whose manifest says `name` and `version`, with `extra` lines after them. */
-export function makePackage(name, version, extra = "") {
+/**
+ * A package archive whose manifest (JSON here, as the fake compiler reads it) gives `name` and `version`, with the
+ * fields of `pkg` added to its `package` and the given `dependencies`, and whose api.json exports `exports`.
+ */
+export function makePackage(name, version, { pkg = {}, dependencies = [], exports = [] } = {}) {
   return makeZip({
-    [`${name}/${name}.nyxp`]: `[package]\nname = "${name}"\nversion = "${version}"\n${extra}`,
+    [`${name}/${name}.nyxp`]: JSON.stringify({ package: { name, version, ...pkg }, dependencies }),
     [`${name}/src/main.nyx`]: "module main\n",
+    [`${name}/api.json`]: JSON.stringify({ exports }),
   });
 }
 
@@ -55,3 +61,9 @@ export function makePackage(name, version, extra = "") {
 export function release(tag, assets) {
   return { tag_name: tag, draft: false, assets: assets.map(([name, url, digest]) => ({ name, browser_download_url: url, digest })) };
 }
+
+/** The fake compiler the tests run in place of `nanyx`. */
+export const fakeNanyx = fileURLToPath(new URL("./fake-nanyx/nanyx", import.meta.url));
+
+/** A test fixture's text. */
+export const fixture = (name) => readFileSync(fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url)), "utf8");

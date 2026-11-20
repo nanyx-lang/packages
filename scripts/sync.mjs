@@ -1,7 +1,10 @@
 // Brings every registered package's index file up to date with its releases: `node scripts/sync.mjs`.
+// It runs the compiler at `$NANYX` (or `nanyx` on the path) to read manifests and check releases; `$NANYX_VERSION`,
+// if set, is the compiler's version, which the summary names.
 
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
+import { compiler } from "./lib/compiler.mjs";
 import { download, listReleases } from "./lib/github.mjs";
 import { parseRepository } from "./lib/names.mjs";
 import { formatJson, indexPath, readJsonFiles, readRegistration } from "./lib/registry.mjs";
@@ -9,6 +12,7 @@ import { syncPackage } from "./lib/sync.mjs";
 
 const reports = [];
 const updated = [];
+const nanyx = compiler(process.env.NANYX || "nanyx");
 
 for (const [path, text] of readJsonFiles(process.cwd(), "registry")) {
   const { registration, problems } = readRegistration(path, text);
@@ -21,7 +25,7 @@ for (const [path, text] of readJsonFiles(process.cwd(), "registry")) {
     const index = existsSync(target) ? JSON.parse(readFileSync(target, "utf8")) : null;
     const { owner, repo } = parseRepository(registration.repository);
     const releases = await listReleases(owner, repo);
-    const result = await syncPackage({ registration, index, releases, download });
+    const result = await syncPackage({ registration, index, releases, download, compiler: nanyx });
     reports.push(...result.reports);
     if (result.changed) {
       mkdirSync(dirname(target), { recursive: true });
@@ -34,6 +38,7 @@ for (const [path, text] of readJsonFiles(process.cwd(), "registry")) {
 }
 
 const summary =
+  (process.env.NANYX_VERSION ? `Read manifests and checked releases with the Nanyx compiler ${process.env.NANYX_VERSION}.\n\n` : "") +
   (updated.length === 0 ? "No index files changed.\n" : `Updated: ${updated.join(", ")}.\n`) +
   (reports.length === 0 ? "" : "\nReports:\n\n" + reports.map((r) => `- ${r}`).join("\n") + "\n");
 console.log(summary);
