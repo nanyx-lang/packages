@@ -1,5 +1,24 @@
 {
   "name": "nanyx.json",
   "repository": "https://github.com/nanyx-lang/json",
-  "versions": []
+  "versions": [
+    {
+      "version": "0.1.0",
+      "url": "https://github.com/nanyx-lang/json/releases/download/v0.1.0/nanyx.json-0.1.0.nyxpkg",
+      "sha256": "2c46ffb937bf41d1d0273b1bd460e5ead3ca9e54dfefd1eb59ae811b9b6cccb9",
+      "nanyx": null,
+      "dependencies": {},
+      "yanked": false,
+      "available": true
+    },
+    {
+      "version": "0.1.1",
+      "url": "https://github.com/nanyx-lang/json/releases/download/v0.1.1/nanyx.json-0.1.1.nyxpkg",
+      "sha256": "8dde6c0d200fa1b3ccf4a1a7812e2089ecf93e0ec9d9bcea93eaee7197ef29b3",
+      "nanyx": null,
+      "dependencies": {},
+      "yanked": false,
+      "available": true
+    }
+  ]
 }
