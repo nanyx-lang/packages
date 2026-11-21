@@ -155,6 +155,28 @@ test("a manifest naming another repository is reported and not recorded", async 
   ]);
 });
 
+test("a manifest giving its repository as owner/name, as the compiler writes it, is the repository registered", async () => {
+  const result = await syncPackage({
+    registration,
+    index: null,
+    releases: [release("v1.0.0", [["acme.web-1.0.0.nyxpkg", url("v1.0.0", "1.0.0")]])],
+    download: downloads({ [url("v1.0.0", "1.0.0")]: makePackage("acme.web", "1.0.0", { pkg: { repository: "acme/acme.web" } }) }),
+  });
+  assert.deepEqual(result.index.versions.map((v) => v.version), ["1.0.0"]);
+  assert.deepEqual(result.reports, []);
+});
+
+test("a manifest giving another repository as owner/name is reported and not recorded", async () => {
+  const result = await syncPackage({
+    registration,
+    index: null,
+    releases: [release("v1.0.0", [["acme.web-1.0.0.nyxpkg", url("v1.0.0", "1.0.0")]])],
+    download: downloads({ [url("v1.0.0", "1.0.0")]: makePackage("acme.web", "1.0.0", { pkg: { repository: "evil/acme.web" } }) }),
+  });
+  assert.deepEqual(result.index.versions, []);
+  assert.equal(result.reports.length, 1);
+});
+
 // The release check. Each version is described by its exports, and an entry already in the index by its recorded hash.
 const asset = (version, exports) => makePackage("acme.web", version, { exports });
 const releaseOf = (version) => release(`v${version}`, [["acme.web-" + version + ".nyxpkg", url(`v${version}`, version)]]);
