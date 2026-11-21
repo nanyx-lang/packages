@@ -84,7 +84,9 @@ The sync reads the manifest with the compiler (`nanyx manifest --json`), so any 
 read. A release is reported, and not recorded, if:
 
 - the manifest's `package.name` and `package.version` don't match the release.
-- its `package.repository`, if it gives one, isn't the repository the package is registered with.
+- its `package.repository`, if it gives one, isn't the repository the package is registered with. The manifest
+  writes it as `owner/name`, `nanyx-lang/json`, and it is compared with the registration's address without regard to
+  case.
 - it has a dependency found by its `path` or on GitHub: only dependencies from the index can be published.
 - it fails the release check.
 

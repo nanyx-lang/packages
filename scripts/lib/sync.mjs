@@ -45,7 +45,15 @@ async function newEntry(registration, version, asset, download, compiler) {
   };
 }
 
-const sameRepository = (a, b) => a.replace(/(\.git)?\/*$/, "").toLowerCase() === b.replace(/(\.git)?\/*$/, "").toLowerCase();
+// A repository as `owner/name`, in lower case: a manifest writes it so, `nanyx-lang/json`, and a registration as its
+// address, `https://github.com/nanyx-lang/json`, either perhaps with `.git` or a `/` after it.
+const repositoryKey = (repository) =>
+  repository
+    .replace(/(\.git)?\/*$/, "")
+    .replace(/^https:\/\/github\.com\//i, "")
+    .toLowerCase();
+
+const sameRepository = (a, b) => repositoryKey(a) === repositoryKey(b);
 
 // The newest recorded version below `version` that isn't yanked and is available, or null.
 function previousVersion(versions, version) {
