@@ -4,8 +4,7 @@ import { cpSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 export default defineConfig({
-  site: "https://nanyx-lang.github.io",
-  base: "/packages",
+  site: "https://packages.nanyx.dev",
   outDir: "./_site",
   integrations: [
     react(),
