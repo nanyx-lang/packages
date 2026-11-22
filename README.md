@@ -1,7 +1,7 @@
 # The Nanyx package index
 
 This repository is the index of published [Nanyx](https://github.com/nanyx-lang/nanyx) packages. It is served as
-static files at **https://nanyx-lang.github.io/packages/**, and a client only ever reads those files over HTTPS.
+static files at **https://packages.nanyx.dev/**, and a client only ever reads those files over HTTPS.
 
 The index stores no packages. A package's versions are the releases of its own GitHub repository, and the index
 records, for each version, where its asset is and its SHA-256. Registering a package is a pull request here;
@@ -19,18 +19,19 @@ The format is versioned. This README describes **format 1**.
 ```json
 {
   "format": 1,
-  "index": "https://nanyx-lang.github.io/packages/index/"
+  "index": "https://packages.nanyx.dev/index/"
 }
 ```
 
 A client reads `config.json` first. `format` is the format version, and a client refuses a format it doesn't know.
-`index` is where the index files are. A client builds every other address from it, so the index can move (to
-`packages.nanyx.dev`, say) by changing `config.json` and leaving a redirect.
+`index` is where the index files are. A client builds every other address from it, so the index can move by changing
+`config.json` and leaving a redirect. It moved from `https://nanyx-lang.github.io/packages/` this way: GitHub Pages
+redirects the old addresses to `packages.nanyx.dev`.
 
 ### Index files
 
 Each package has one file, at `<index><namespace>/<name>.json`, where the namespace is the first part of the name:
-`acme.web` is at `https://nanyx-lang.github.io/packages/index/acme/acme.web.json`.
+`acme.web` is at `https://packages.nanyx.dev/index/acme/acme.web.json`.
 
 ```json
 {
@@ -154,6 +155,6 @@ enable Sync again on the Actions tab and run it by hand.
 
 The registry scripts use only Node's own modules. The site uses Astro, React and Tailwind, with the same theme as
 the Nanyx docs. Use Node 22.23.4 or newer, run `npm ci`, then `npm run dev` for local development. `npm run build` writes the Pages site to
-`_site`, including unchanged copies of `config.json` and `index/`; its base path is `/packages/`. Run the registry
+`_site`, including unchanged copies of `config.json` and `index/`, to be served at the root of `packages.nanyx.dev`. Run the registry
 tests with `npm test`; they run a fake compiler, `test/fake-nanyx/nanyx`, and need neither the network nor a real one.
 Run the built-site checks with `npm run build && npm run test:site`.
