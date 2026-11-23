@@ -28,6 +28,24 @@
       "dependencies": {},
       "unlisted": false,
       "available": true
+    },
+    {
+      "version": "0.2.1",
+      "url": "https://github.com/nanyx-lang/json/releases/download/v0.2.1/nanyx.json-0.2.1.nyxpkg",
+      "sha256": "92594fa3552af680a535c5972bd8ca1946b0a90b3dd318a0fcec57862418d5f0",
+      "nanyx": null,
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
+    },
+    {
+      "version": "0.3.0",
+      "url": "https://github.com/nanyx-lang/json/releases/download/v0.3.0/nanyx.json-0.3.0.nyxpkg",
+      "sha256": "831a5d9c6eef0062e7fc5cedeb3c28c2a53f800ac7cdd18595ba0705acada1fb",
+      "nanyx": null,
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
     }
   ]
 }
