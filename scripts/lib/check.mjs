@@ -1,7 +1,7 @@
-// What a pull request to the index may change: add registrations, and yank or unyank versions.
+// What a pull request to the index may change: add registrations, and unlist or relist versions.
 
 import { confusableWith, namespaceOf, ownerOfNamespace, parseRepository } from "./names.mjs";
-import { readRegistration } from "./registry.mjs";
+import { readRegistration, withUnlisted } from "./registry.mjs";
 
 const changedPaths = (base, head) =>
   [...new Set([...base.keys(), ...head.keys()])].filter((path) => base.get(path) !== head.get(path)).sort();
@@ -26,11 +26,12 @@ async function addedRegistrationProblems(path, text, allNames, getRepository) {
   return problems;
 }
 
-// The problems with a change to an index file: only "yanked" may change.
+// The problems with a change to an index file: only a version's "unlisted" may change. A version's "yanked", the
+// field's old name, which compilers up to 0.34.0 write, is read as "unlisted", and the sync rewrites it so.
 function indexChangeProblems(path, before, after) {
-  const onlyYanked = `${path}: index files are written by the sync; a pull request may only change a version's "yanked"`;
+  const onlyUnlisted = `${path}: index files are written by the sync; a pull request may only change a version's "unlisted"`;
   if (before === undefined) return [`${path}: index files are written by the sync; a pull request can't add one`];
-  if (after === undefined) return [`${path}: versions are never removed from the index; yank them instead`];
+  if (after === undefined) return [`${path}: versions are never removed from the index; unlist them instead`];
   let old, now;
   try {
     old = JSON.parse(before);
@@ -39,12 +40,16 @@ function indexChangeProblems(path, before, after) {
     return [`${path} isn't valid JSON: ${e.message}`];
   }
   const problems = [];
-  for (const v of now.versions ?? []) if (typeof v.yanked !== "boolean") problems.push(`${path}: "yanked" of ${v.version} must be true or false`);
-  const withOldYanks = {
-    ...now,
-    versions: (now.versions ?? []).map((v, i) => ({ ...v, yanked: old.versions?.[i]?.yanked })),
+  for (const v of now.versions ?? [])
+    for (const field of ["unlisted", "yanked"])
+      if (field in v && typeof v[field] !== "boolean") problems.push(`${path}: "${field}" of ${v.version} must be true or false`);
+  const normal = (file) => ({ ...file, versions: (file.versions ?? []).map(withUnlisted) });
+  const [oldNormal, nowNormal] = [normal(old), normal(now)];
+  const withOldUnlisted = {
+    ...nowNormal,
+    versions: nowNormal.versions.map((v, i) => ({ ...v, unlisted: oldNormal.versions[i]?.unlisted })),
   };
-  if (JSON.stringify(withOldYanks) !== JSON.stringify(old)) problems.push(onlyYanked);
+  if (JSON.stringify(withOldUnlisted) !== JSON.stringify(oldNormal)) problems.push(onlyUnlisted);
   return problems;
 }
 

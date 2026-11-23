@@ -8,7 +8,7 @@
       "sha256": "2c46ffb937bf41d1d0273b1bd460e5ead3ca9e54dfefd1eb59ae811b9b6cccb9",
       "nanyx": null,
       "dependencies": {},
-      "yanked": false,
+      "unlisted": false,
       "available": true
     },
     {
@@ -17,7 +17,7 @@
       "sha256": "8dde6c0d200fa1b3ccf4a1a7812e2089ecf93e0ec9d9bcea93eaee7197ef29b3",
       "nanyx": null,
       "dependencies": {},
-      "yanked": false,
+      "unlisted": false,
       "available": true
     },
     {
@@ -26,7 +26,7 @@
       "sha256": "1e897681ce9e56b304e9656f2e310202c77c22c0095dd119016fde4a770b2f80",
       "nanyx": null,
       "dependencies": {},
-      "yanked": false,
+      "unlisted": false,
       "available": true
     }
   ]

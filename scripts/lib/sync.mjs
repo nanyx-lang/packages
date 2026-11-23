@@ -1,6 +1,7 @@
 // Bringing one package's index file up to date with its repository's releases.
 
 import { createHash } from "node:crypto";
+import { withUnlisted } from "./registry.mjs";
 import { compareVersions, versionOfTag } from "./versions.mjs";
 
 /** The name of the asset a release of `name` at `version` carries. */
@@ -39,7 +40,7 @@ async function newEntry(registration, version, asset, download, compiler) {
       sha256: sha256(bytes),
       nanyx: manifest.nanyx,
       dependencies: manifest.dependencies,
-      yanked: false,
+      unlisted: false,
       available: true,
     },
   };
@@ -55,11 +56,11 @@ const repositoryKey = (repository) =>
 
 const sameRepository = (a, b) => repositoryKey(a) === repositoryKey(b);
 
-// The newest recorded version below `version` that isn't yanked and is available, or null.
+// The newest recorded version below `version` that isn't unlisted and is available, or null.
 function previousVersion(versions, version) {
   let previous = null;
   for (const entry of versions.values())
-    if (!entry.yanked && entry.available && compareVersions(entry.version, version) < 0 && (previous === null || compareVersions(entry.version, previous.version) > 0))
+    if (!entry.unlisted && entry.available && compareVersions(entry.version, version) < 0 && (previous === null || compareVersions(entry.version, previous.version) > 0))
       previous = entry;
   return previous;
 }
@@ -92,7 +93,8 @@ async function replacedHash(entry, asset, download) {
  * The package's index file after reading its releases, and what the sync should report. A version, once recorded,
  * keeps its hash and is never removed: a replaced asset is reported, and a missing one marks the version unavailable.
  * A new version is recorded only if the compiler can read its manifest and, when a version below it is recorded, it
- * is a big enough bump from the newest of those that isn't yanked and is available.
+ * is a big enough bump from the newest of those that isn't unlisted and is available. A version's `"yanked"`, the field's
+ * old name, is read as `"unlisted"` and written as it.
  *
  * `releases` is null when the repository doesn't exist. `download` returns the bytes at a URL. `compiler` reads a
  * package asset's manifest (`readPackage`) and checks a release (`apiCheck`), as `compiler.mjs` does.
@@ -100,7 +102,7 @@ async function replacedHash(entry, asset, download) {
 export async function syncPackage({ registration, index, releases, download, compiler }) {
   const { name, repository } = registration;
   const reports = [];
-  const versions = new Map((index?.versions ?? []).map((v) => [v.version, { ...v }]));
+  const versions = new Map((index?.versions ?? []).map((v) => [v.version, withUnlisted(v)]));
   const released = releases === null ? new Map() : releasedVersions(name, releases);
   if (releases === null) reports.push(`${name}: the repository ${repository} can't be found`);
 

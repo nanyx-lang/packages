@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { packages, tagOf } from "../src/lib/packages.mjs";
 import { renderReadme } from "../src/lib/readme.mjs";
 
-test("package listing keeps index order and selects the last available, unyanked version", (t) => {
+test("package listing keeps index order and selects the last available, listed version", (t) => {
   const root = mkdtempSync(join(tmpdir(), "nanyx-packages-"));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   mkdirSync(join(root, "index", "acme"), { recursive: true });
@@ -14,12 +14,13 @@ test("package listing keeps index order and selects the last available, unyanked
     name, repository: `https://github.com/acme/${name}`, versions,
   }));
   write("acme.z", [
-    { version: "1.0.0", available: true, yanked: false },
-    { version: "2.0.0", available: true, yanked: false },
-    { version: "3.0.0", available: true, yanked: true },
-    { version: "4.0.0", available: false, yanked: false },
+    { version: "1.0.0", available: true, unlisted: false },
+    { version: "2.0.0", available: true, unlisted: false },
+    { version: "3.0.0", available: true, unlisted: true },
+    { version: "3.1.0", available: true, yanked: true },
+    { version: "4.0.0", available: false, unlisted: false },
   ]);
-  write("acme.a", [{ version: "1.0.0", available: false, yanked: false }]);
+  write("acme.a", [{ version: "1.0.0", available: false, unlisted: false }]);
   assert.deepEqual(packages(root).map(({ path, latest }) => [path, latest]), [
     ["index/acme/acme.a.json", "none"],
     ["index/acme/acme.z.json", "2.0.0"],
@@ -34,10 +35,10 @@ test("a package's versions are listed newest first, each marked, with its asset'
     name: "acme.web",
     repository: "https://github.com/acme/acme.web",
     versions: [
-      { version: "1.0.0", url: "https://github.com/acme/acme.web/releases/download/v1.0.0/acme.web-1.0.0.nyxpkg", available: true, yanked: false },
-      { version: "1.1.0", url: "../files/acme.web-1.1.0.nyxpkg", available: true, yanked: false },
-      { version: "1.2.0", url: "https://github.com/acme/acme.web/releases/download/1.2.0/acme.web-1.2.0.nyxpkg", available: true, yanked: true },
-      { version: "2.0.0-beta.1", url: "https://github.com/acme/acme.web/releases/download/v2.0.0-beta.1/acme.web-2.0.0-beta.1.nyxpkg", available: false, yanked: false },
+      { version: "1.0.0", url: "https://github.com/acme/acme.web/releases/download/v1.0.0/acme.web-1.0.0.nyxpkg", available: true, unlisted: false },
+      { version: "1.1.0", url: "../files/acme.web-1.1.0.nyxpkg", available: true, unlisted: false },
+      { version: "1.2.0", url: "https://github.com/acme/acme.web/releases/download/1.2.0/acme.web-1.2.0.nyxpkg", available: true, unlisted: true },
+      { version: "2.0.0-beta.1", url: "https://github.com/acme/acme.web/releases/download/v2.0.0-beta.1/acme.web-2.0.0-beta.1.nyxpkg", available: false, unlisted: false },
     ],
   }));
   const [entry] = packages(root);

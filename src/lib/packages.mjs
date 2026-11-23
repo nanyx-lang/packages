@@ -1,4 +1,4 @@
-import { readJsonFiles } from "../../scripts/lib/registry.mjs";
+import { isUnlisted, readJsonFiles } from "../../scripts/lib/registry.mjs";
 import { parseRepository } from "../../scripts/lib/names.mjs";
 
 // The address the index files are served from, which a relative `url` in one is read against, as the compiler does.
@@ -7,9 +7,8 @@ const INDEX = "https://packages.nanyx.dev/";
 /** Where a package's page is, relative to the site's root. */
 export const pagePath = (name) => `packages/${name}/`;
 
-// The newest version a resolution can pick: the last that is listed and available. A yanked version is shown as
-// unlisted.
-const latestOf = (versions) => versions.filter((version) => version.available && !version.yanked).at(-1);
+// The newest version a resolution can pick: the last that is listed and available.
+const latestOf = (versions) => versions.filter((version) => version.available && !isUnlisted(version)).at(-1);
 
 /** Every package in the index, by name, with what its page shows that the index file gives. */
 export function packages(root) {
@@ -30,7 +29,7 @@ export function packages(root) {
           .map((version) => ({
             ...version,
             url: version.url ? new URL(version.url, new URL(path, INDEX)).toString() : null,
-            unlisted: version.yanked === true,
+            unlisted: isUnlisted(version),
             prerelease: version.version.includes("-"),
             latest: version === latest,
           }))

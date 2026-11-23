@@ -44,7 +44,7 @@ Each package has one file, at `<index><namespace>/<name>.json`, where the namesp
       "sha256": "9f2c41…",
       "nanyx": "0.14",
       "dependencies": { "acme.core": "^2.1" },
-      "yanked": false,
+      "unlisted": false,
       "available": true
     }
   ]
@@ -61,7 +61,7 @@ Each package has one file, at `<index><namespace>/<name>.json`, where the namesp
 | `sha256` | The asset's SHA-256, in hex, as it was when the version was first recorded. It never changes. |
 | `nanyx` | The oldest compiler the version builds with, from its manifest's `package.nanyx`, or `null` if it gives none. |
 | `dependencies` | Its manifest's `dependencies`, each `(package = …, version = …)`: package name to version requirement. |
-| `yanked` | `true` once the version has been yanked. New resolutions don't pick a yanked version, but a lockfile that names it still installs it. |
+| `unlisted` | `true` once the version has been unlisted. New resolutions don't pick an unlisted version, but a lockfile that names it still installs it. Until November 2026 the field was called `yanked`; compilers up to 0.34.0 read and write only `yanked` (see below). |
 | `available` | `false` while the version's release or asset is missing from GitHub. |
 
 A client checks the hash of everything it downloads against `sha256`, and refuses it if they differ.
@@ -95,7 +95,7 @@ read. A release is reported, and not recorded, if:
 
 Versions are semantic, and the index enforces it. When a new version has a recorded version below it, the sync runs
 `nanyx api-check <older.nyxpkg> <newer.nyxpkg>`, where the older one is the newest recorded version below the new one
-that isn't yanked and is available. The compiler compares the two `api.json` files and refuses the new version if its
+that isn't unlisted and is available. The compiler compares the two `api.json` files and refuses the new version if its
 number is too small for the changes: removing or changing something needs a new major version, adding something a
 new minor version (one place lower before `1.0.0`). A version that fails isn't recorded, and the report says what to
 fix. A package's first version isn't checked.
@@ -142,10 +142,15 @@ maintainer merges it over them. Both files go together: the sync only reads regi
 file, so an index file left behind stays listed, unchanged, while an index file removed with its registration kept is
 written again on the next run from the releases as they are then, with their hashes taken afresh.
 
-## Yanking a version
+## Unlisting a version
 
-Open a pull request that changes the version's `"yanked"` to `true` in its index file. The checks refuse a pull
-request that changes anything else in an index file. Unyanking is the same change back.
+Open a pull request that changes the version's `"unlisted"` to `true` in its index file. The checks refuse a pull
+request that changes anything else in an index file. Listing it again is the same change back.
+
+Unlisting was called yanking, and the field `"yanked"`. The sync still reads a version's `"yanked": true` as unlisted,
+and writes it as `"unlisted"`; the checks accept a pull request that sets `"yanked"`, as `nanyx yank` from a compiler up
+to 0.34.0 does. Those compilers read only `"yanked"`, so they don't see a version unlisted under the new name as
+unlisted: they may pick it for a new resolution.
 
 ## The workflows
 
@@ -165,7 +170,7 @@ enable Sync again on the Actions tab and run it by hand.
 
 The registry scripts use only Node's own modules. The site uses Astro, React and Tailwind, with the same theme as
 the Nanyx docs. It has a page for each package in the index, at `https://packages.nanyx.dev/packages/<name>/`,
-built from its index file: its versions, newest first, with unlisted (yanked) and unavailable ones marked and each
+built from its index file: its versions, newest first, with unlisted and unavailable ones marked and each
 one's `.nyxpkg` to download; how to install it; a link to its index file; and its repository's description and README.
 The README is read when the site is built from the repository's raw files at the release tag of the newest version,
 so it describes the version that is installed (a `.nyxpkg` holds no README); its HTML is sanitized, and its relative
