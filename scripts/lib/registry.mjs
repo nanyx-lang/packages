@@ -45,3 +45,15 @@ export function readRegistration(path, text) {
 
 /** Writes an index file's JSON as the repository keeps it. */
 export const formatJson = (value) => JSON.stringify(value, null, 2) + "\n";
+
+/**
+ * Whether an index file's version is unlisted: its `"unlisted"` is true, or its `"yanked"`, which is what the field was
+ * called before, and what compilers up to 0.34.0 read and write.
+ */
+export const isUnlisted = (version) => version.unlisted === true || version.yanked === true;
+
+/** An index file's version as the sync writes it: with `"unlisted"`, and no `"yanked"`. */
+export function withUnlisted(version) {
+  const { yanked, unlisted, available, ...rest } = version;
+  return { ...rest, unlisted: isUnlisted(version), available };
+}

@@ -1,4 +1,4 @@
-import { readJsonFiles } from "../../scripts/lib/registry.mjs";
+import { isUnlisted, readJsonFiles } from "../../scripts/lib/registry.mjs";
 
 export function packages(root) {
   return [...readJsonFiles(root, "index")]
@@ -9,7 +9,7 @@ export function packages(root) {
         path,
         name,
         repository,
-        latest: versions.filter((version) => version.available && !version.yanked).at(-1)?.version ?? "none",
+        latest: versions.filter((version) => version.available && !isUnlisted(version)).at(-1)?.version ?? "none",
       };
     });
 }

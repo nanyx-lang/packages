@@ -70,18 +70,37 @@ test("a private or missing repository is refused", async () => {
   ]);
 });
 
-const index = (yanked, sha = "a") =>
-  JSON.stringify({ name: "acme.web", repository: "https://github.com/acme/acme.web", versions: [{ version: "1.0.0", sha256: sha, yanked }] });
+const index = (unlisted, sha = "a", field = "unlisted") =>
+  JSON.stringify({ name: "acme.web", repository: "https://github.com/acme/acme.web", versions: [{ version: "1.0.0", sha256: sha, [field]: unlisted, available: true }] });
 
-test("yanking a version passes", async () => {
+test("unlisting a version, or listing it again, passes", async () => {
   const path = "index/acme/acme.web.json";
   assert.deepEqual(await check([], { baseIndex: new Map([[path, index(false)]]), headIndex: new Map([[path, index(true)]]) }), []);
+  assert.deepEqual(await check([], { baseIndex: new Map([[path, index(true)]]), headIndex: new Map([[path, index(false)]]) }), []);
 });
 
-test("changing anything in an index file but yanked is refused", async () => {
+test("a version unlisted by its old name, as compilers up to 0.34.0 yank it, passes", async () => {
+  const path = "index/acme/acme.web.json";
+  const yankedByOldCompiler = JSON.stringify({
+    name: "acme.web",
+    repository: "https://github.com/acme/acme.web",
+    versions: [{ version: "1.0.0", sha256: "a", unlisted: false, available: true, yanked: true }],
+  });
+  assert.deepEqual(await check([], { baseIndex: new Map([[path, index(false)]]), headIndex: new Map([[path, yankedByOldCompiler]]) }), []);
+  assert.deepEqual(await check([], { baseIndex: new Map([[path, index(false, "a", "yanked")]]), headIndex: new Map([[path, index(true, "a", "yanked")]]) }), []);
+});
+
+test("an unlisted that isn't true or false is refused", async () => {
+  const path = "index/acme/acme.web.json";
+  assert.deepEqual(await check([], { baseIndex: new Map([[path, index(false)]]), headIndex: new Map([[path, index("yes")]]) }), [
+    'index/acme/acme.web.json: "unlisted" of 1.0.0 must be true or false',
+  ]);
+});
+
+test("changing anything in an index file but unlisted is refused", async () => {
   const path = "index/acme/acme.web.json";
   assert.deepEqual(await check([], { baseIndex: new Map([[path, index(false)]]), headIndex: new Map([[path, index(false, "b")]]) }), [
-    'index/acme/acme.web.json: index files are written by the sync; a pull request may only change a version\'s "yanked"',
+    'index/acme/acme.web.json: index files are written by the sync; a pull request may only change a version\'s "unlisted"',
   ]);
   assert.deepEqual(await check([], { baseIndex: new Map(), headIndex: new Map([[path, index(false)]]) }), [
     "index/acme/acme.web.json: index files are written by the sync; a pull request can't add one",

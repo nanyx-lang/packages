@@ -36,7 +36,7 @@ test("a new release is recorded with its hash and its manifest's dependencies", 
         sha256: sha256(bytes),
         nanyx: null,
         dependencies: { "acme.core": "2.1" },
-        yanked: false,
+        unlisted: false,
         available: true,
       },
     ],
@@ -71,7 +71,7 @@ const recorded = (version, sha, extra = {}) => ({
   sha256: sha,
   nanyx: null,
   dependencies: {},
-  yanked: false,
+  unlisted: false,
   available: true,
   ...extra,
 });
@@ -105,9 +105,9 @@ test("without a digest from GitHub, the asset is downloaded to compare its hash"
 });
 
 test("a version whose release is gone is kept, marked unavailable, and comes back with its release", async () => {
-  const index = { ...registration, versions: [recorded("1.0.0", "a".repeat(64), { yanked: true })] };
+  const index = { ...registration, versions: [recorded("1.0.0", "a".repeat(64), { unlisted: true })] };
   const gone = await syncPackage({ registration, index, releases: [], download: downloads({}) });
-  assert.deepEqual(gone.index.versions, [recorded("1.0.0", "a".repeat(64), { yanked: true, available: false })]);
+  assert.deepEqual(gone.index.versions, [recorded("1.0.0", "a".repeat(64), { unlisted: true, available: false })]);
   assert.deepEqual(gone.reports, ["acme.web 1.0.0: the release or its asset is gone, so the version is marked unavailable"]);
 
   const back = await syncPackage({
@@ -116,7 +116,7 @@ test("a version whose release is gone is kept, marked unavailable, and comes bac
     releases: [release("v1.0.0", [["acme.web-1.0.0.nyxpkg", url("v1.0.0", "1.0.0"), "sha256:" + "a".repeat(64)]])],
     download: downloads({}),
   });
-  assert.deepEqual(back.index.versions, [recorded("1.0.0", "a".repeat(64), { yanked: true })]);
+  assert.deepEqual(back.index.versions, [recorded("1.0.0", "a".repeat(64), { unlisted: true })]);
   assert.deepEqual(back.reports, ["acme.web 1.0.0 is available again"]);
 });
 
@@ -199,13 +199,13 @@ test("a first version isn't checked, and later ones in the same run are checked 
   ]);
 });
 
-test("a new version is checked against the newest recorded version below it that isn't yanked and is available", async () => {
+test("a new version is checked against the newest recorded version below it that isn't unlisted and is available", async () => {
   const older = asset("1.0.0", ["a"]);
   const index = {
     ...registration,
     versions: [
       recorded("1.0.0", sha256(older)),
-      recorded("1.1.0", "b".repeat(64), { yanked: true }),
+      recorded("1.1.0", "b".repeat(64), { unlisted: true }),
       recorded("1.2.0", "c".repeat(64), { available: false }),
       recorded("3.0.0", "d".repeat(64)),
     ],
@@ -258,4 +258,25 @@ test("a release check the compiler can't make is reported, saying why, and the v
   assert.deepEqual(result.reports, [
     "acme.web 1.0.1 (release v1.0.1) isn't recorded: it can't be checked against 1.0.0: nanyx api-check exited with 2: error: There is no file 'older.nyxpkg'",
   ]);
+});
+
+test("a version's old \"yanked\" is read as \"unlisted\" and written as it", async () => {
+  const old = (version, sha, yanked) => {
+    const { unlisted, available, ...rest } = recorded(version, sha);
+    return { ...rest, yanked, available };
+  };
+  const index = { ...registration, versions: [old("1.0.0", "a".repeat(64), true), old("1.1.0", "b".repeat(64), false)] };
+  const result = await syncPackage({
+    registration,
+    index,
+    releases: [
+      release("v1.0.0", [["acme.web-1.0.0.nyxpkg", url("v1.0.0", "1.0.0"), "sha256:" + "a".repeat(64)]]),
+      release("v1.1.0", [["acme.web-1.1.0.nyxpkg", url("v1.1.0", "1.1.0"), "sha256:" + "b".repeat(64)]]),
+    ],
+    download: downloads({}),
+  });
+  assert.deepEqual(result.reports, []);
+  assert.equal(result.changed, true);
+  assert.deepEqual(result.index.versions, [recorded("1.0.0", "a".repeat(64), { unlisted: true }), recorded("1.1.0", "b".repeat(64))]);
+  assert.deepEqual(Object.keys(result.index.versions[0]), ["version", "url", "sha256", "nanyx", "dependencies", "unlisted", "available"]);
 });

@@ -22,7 +22,7 @@ jobs:
         run: npm test
       - name: Build and test the site
         run: npm run build && npm run test:site
-      - name: Check registrations and yanks
+      - name: Check registrations and unlisted versions
         run: node scripts/check-pull-request.mjs "${{ github.event.pull_request.base.sha }}"
         env:
           GITHUB_TOKEN: ${{ github.token }}
