@@ -19,6 +19,15 @@
       "dependencies": {},
       "yanked": false,
       "available": true
+    },
+    {
+      "version": "0.2.0",
+      "url": "https://github.com/nanyx-lang/json/releases/download/v0.2.0/nanyx.json-0.2.0.nyxpkg",
+      "sha256": "1e897681ce9e56b304e9656f2e310202c77c22c0095dd119016fde4a770b2f80",
+      "nanyx": null,
+      "dependencies": {},
+      "yanked": false,
+      "available": true
     }
   ]
 }
