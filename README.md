@@ -132,6 +132,16 @@ The pull request's checks refuse it, saying why, if:
 A maintainer reviews and merges registrations by hand. Once one is merged, the sync runs and records the package's
 existing releases. A registration can't be changed or removed by a pull request; ask a maintainer.
 
+### Removing a package
+
+Only a maintainer removes a package, and only one that nothing should depend on, such as a test: once it is gone,
+the index no longer lists its versions, so a lockfile that names one of them can't install it, and its name can be
+registered again. Remove the registration and the index file, `registry/<namespace>/<name>.json` and
+`index/<namespace>/<name>.json`, in the same pull request. The checks refuse it, as they refuse any removal, so the
+maintainer merges it over them. Both files go together: the sync only reads registrations and never deletes an index
+file, so an index file left behind stays listed, unchanged, while an index file removed with its registration kept is
+written again on the next run from the releases as they are then, with their hashes taken afresh.
+
 ## Yanking a version
 
 Open a pull request that changes the version's `"yanked"` to `true` in its index file. The checks refuse a pull
