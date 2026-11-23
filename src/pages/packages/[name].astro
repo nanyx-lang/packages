@@ -1,0 +1,125 @@
+---
+import Base from "../../layouts/Base.astro";
+import { packages, tagOf } from "../../lib/packages.mjs";
+import { readDescription, readReadme } from "../../lib/readme.mjs";
+
+export async function getStaticPaths() {
+  return Promise.all(
+    packages(process.cwd()).map(async (entry) => {
+      // The README is the one at the release of the newest version, or of the last one recorded if none can be
+      // installed, so the page describes what is installed.
+      const shown = entry.versions.find((version) => version.latest) ?? entry.versions[0];
+      const tag = shown ? tagOf(shown) : null;
+      const [description, readme] = entry.github
+        ? await Promise.all([readDescription(entry.github), tag ? readReadme({ ...entry.github, tag }) : { readme: null, problem: null }])
+        : [null, { readme: null, problem: null }];
+      return { params: { name: entry.name }, props: { entry, tag, shown, description, ...readme } };
+    }),
+  );
+}
+
+const { entry, tag, shown, description, readme, problem } = Astro.props;
+const base = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
+const latest = entry.versions.find((version) => version.latest);
+const dependency = `::dependency ${entry.name} ${(latest ?? entry.versions[0])?.version ?? "<version>"}`;
+const badge = "rounded-md px-2 py-0.5 text-xs font-medium";
+---
+
+<Base title={`${entry.name} · Nanyx packages`} description={description ?? `The Nanyx package ${entry.name}.`}>
+  <section class="relative overflow-hidden border-b border-border">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+    <div class="relative mx-auto max-w-5xl px-6 pb-10 pt-10 md:pb-12 md:pt-14">
+      <p class="mb-3 text-sm font-medium"><a class="text-primary hover:underline" href={base}>Packages</a></p>
+      <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+        <h1 class="break-all text-3xl font-bold tracking-tight md:text-5xl">{entry.name}</h1>
+        <span class={`${badge} bg-accent text-accent-foreground`}>Latest: {entry.latest}</span>
+      </div>
+      {description && <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">{description}</p>}
+      <p class="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+        <a class="break-all text-primary hover:underline" href={entry.repository}>{entry.repository.replace(/^https:\/\//, "")}</a>
+        <a class="text-muted-foreground hover:text-foreground hover:underline" href={`${base}${entry.path}`}>Index file (JSON)</a>
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto grid max-w-5xl gap-10 px-6 pb-24 pt-10 lg:grid-cols-[minmax(0,1fr)_21rem]">
+    <aside class="space-y-10 lg:order-2">
+      <section aria-labelledby="install-heading">
+        <h2 id="install-heading" class="mb-3 text-xl font-semibold">Install</h2>
+        <p class="mb-2 text-sm text-muted-foreground">In a package, add it to the manifest's dependencies:</p>
+        <div class="copyable flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2">
+          <code class="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-sm">nanyx install {entry.name}</code>
+          <button type="button" class="copy shrink-0 text-xs font-medium text-primary hover:underline">Copy</button>
+        </div>
+        <p class="mb-2 mt-4 text-sm text-muted-foreground">In a script, name it at a version:</p>
+        <div class="copyable flex items-center gap-2 rounded-lg border border-border bg-muted px-3 py-2">
+          <code class="min-w-0 flex-1 overflow-x-auto whitespace-nowrap text-sm">{dependency}</code>
+          <button type="button" class="copy shrink-0 text-xs font-medium text-primary hover:underline">Copy</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="versions-heading">
+        <h2 id="versions-heading" class="mb-3 text-xl font-semibold">Versions</h2>
+        <ol class="divide-y divide-border rounded-xl border border-border bg-card">
+          {entry.versions.map((version) => (
+            <li class="px-4 py-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class={`font-mono text-sm font-medium ${version.unlisted || !version.available ? "text-muted-foreground" : ""}`}>{version.version}</span>
+                {version.latest && <span class={`${badge} bg-accent text-accent-foreground`}>latest</span>}
+                {version.prerelease && <span class={`${badge} bg-muted text-muted-foreground`}>pre-release</span>}
+                {version.unlisted && <span class={`${badge} bg-amber-500/15 text-amber-700 dark:text-amber-300`} title="New resolutions don't pick it, but a lockfile that names it still installs it.">unlisted</span>}
+                {!version.available && <span class={`${badge} bg-red-500/15 text-red-700 dark:text-red-300`} title="Its release or asset is missing from GitHub.">unavailable</span>}
+                {version.available && version.url
+                  ? <a class="ml-auto text-xs text-primary hover:underline" href={version.url} title={`SHA-256 ${version.sha256}`}>Download .nyxpkg</a>
+                  : <span class="ml-auto text-xs text-muted-foreground">No download</span>}
+              </div>
+              {(version.nanyx || Object.keys(version.dependencies ?? {}).length > 0) && (
+                <p class="mt-1 text-xs text-muted-foreground">
+                  {version.nanyx && <span>Nanyx {version.nanyx} or later</span>}
+                  {version.nanyx && Object.keys(version.dependencies ?? {}).length > 0 && <span> · </span>}
+                  {Object.keys(version.dependencies ?? {}).length > 0 && (
+                    <span>Depends on {Object.entries(version.dependencies).map(([name, requirement]) => `${name} ${requirement}`).join(", ")}</span>
+                  )}
+                </p>
+              )}
+            </li>
+          ))}
+        </ol>
+        <p class="mt-3 text-xs leading-relaxed text-muted-foreground">
+          An unlisted version isn't picked by new resolutions, but a lockfile that names it still installs it. Each
+          download's SHA-256 is in the <a class="text-primary hover:underline" href={`${base}${entry.path}`}>index file</a>.
+        </p>
+      </section>
+    </aside>
+
+    <section aria-labelledby="readme-heading" class="min-w-0 lg:order-1">
+      <h2 id="readme-heading" class="mb-3 text-xl font-semibold">
+        README{tag && <span class="ml-2 text-sm font-normal text-muted-foreground">at {tag}</span>}
+      </h2>
+      {readme ? (
+        <article class="readme rounded-xl border border-border bg-card p-5 md:p-8" set:html={readme} />
+      ) : (
+        <p class="rounded-xl border border-border p-6 text-muted-foreground">
+          {problem
+            ? <>The README couldn't be read from GitHub when this page was built. Read it in <a class="text-primary hover:underline" href={entry.repository}>the repository</a>.</>
+            : <>{shown ? `The repository has no README at ${tag}.` : "This package has no versions yet."}</>}
+        </p>
+      )}
+    </section>
+  </div>
+
+  <script>
+    for (const button of document.querySelectorAll<HTMLButtonElement>(".copyable .copy")) {
+      button.addEventListener("click", async () => {
+        const text = button.parentElement?.querySelector("code")?.textContent ?? "";
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = "Copied";
+        } catch {
+          button.textContent = "Select";
+        }
+        setTimeout(() => (button.textContent = "Copy"), 1500);
+      });
+    }
+  </script>
+</Base>

@@ -169,7 +169,13 @@ GitHub disables scheduled workflows in a repository with no activity for 60 days
 enable Sync again on the Actions tab and run it by hand.
 
 The registry scripts use only Node's own modules. The site uses Astro, React and Tailwind, with the same theme as
-the Nanyx docs. Use Node 22.23.4 or newer, run `npm ci`, then `npm run dev` for local development. `npm run build` writes the Pages site to
+the Nanyx docs. It has a page for each package in the index, at `https://packages.nanyx.dev/packages/<name>/`,
+built from its index file: its versions, newest first, with unlisted and unavailable ones marked and each
+one's `.nyxpkg` to download; how to install it; a link to its index file; and its repository's description and README.
+The README is read when the site is built from the repository's raw files at the release tag of the newest version,
+so it describes the version that is installed (a `.nyxpkg` holds no README); its HTML is sanitized, and its relative
+links and images point at the repository at that tag. The description is read from GitHub's API, with `GITHUB_TOKEN`
+if it is set. If either can't be read, the build warns and the page goes without it. Use Node 22.23.4 or newer, run `npm ci`, then `npm run dev` for local development. `npm run build` writes the Pages site to
 `_site`, including unchanged copies of `config.json` and `index/`, to be served at the root of `packages.nanyx.dev`. Run the registry
 tests with `npm test`; they run a fake compiler, `test/fake-nanyx/nanyx`, and need neither the network nor a real one.
 Run the built-site checks with `npm run build && npm run test:site`.

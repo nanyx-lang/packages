@@ -1,74 +1,44 @@
 ---
-import "../styles/global.css";
+import Base from "../layouts/Base.astro";
 import { packages } from "../lib/packages.mjs";
 
 const entries = packages(process.cwd());
 const base = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/`;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Explore the Nanyx package index." />
-    <title>Nanyx packages</title>
-    <link rel="icon" type="image/svg+xml" href={`${base}nanyx.svg`} />
-    <script is:inline>
-      (() => {
-        const media = window.matchMedia("(prefers-color-scheme: dark)");
-        const apply = () => document.documentElement.classList.toggle("dark", media.matches);
-        apply();
-        media.addEventListener("change", apply);
-      })();
-    </script>
-  </head>
-  <body>
-    <header class="sticky top-0 z-10 border-b border-border bg-card/95 backdrop-blur">
-      <nav class="mx-auto flex h-16 max-w-5xl items-center gap-6 px-6" aria-label="Main navigation">
-        <a href="https://nanyx.dev/" class="mr-auto flex items-center gap-2.5 font-bold tracking-tight">
-          <img src={`${base}nanyx.svg`} alt="" width="32" height="32" />
-          <span class="text-lg">Nanyx</span>
-        </a>
-        <a href="https://nanyx.dev/" class="text-sm text-muted-foreground transition-colors hover:text-foreground">Docs</a>
-        <a href="https://github.com/nanyx-lang/packages" class="text-sm text-muted-foreground transition-colors hover:text-foreground">GitHub</a>
-      </nav>
-    </header>
-    <main>
-      <section class="relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
-        <div class="relative mx-auto max-w-5xl px-6 pb-12 pt-16 md:pb-16 md:pt-24">
-          <p class="mb-3 text-sm font-medium text-primary">Nanyx ecosystem</p>
-          <h1 class="text-4xl font-bold tracking-tight md:text-5xl">Packages</h1>
-          <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-            Explore packages for Nanyx. Find a package's index and source repository, or register your own.
-          </p>
-          <a href="https://github.com/nanyx-lang/packages#registering-a-package" class="mt-6 inline-flex rounded-lg bg-primary px-5 py-3 font-medium text-primary-foreground shadow-md shadow-primary/20 transition-colors hover:bg-primary/90">
-            Register a package
-          </a>
-        </div>
-      </section>
-      <section class="mx-auto max-w-5xl px-6 pb-24" aria-labelledby="packages-heading">
-        <div class="mb-5 flex items-baseline justify-between gap-4">
-          <h2 id="packages-heading" class="text-2xl font-semibold">Package index</h2>
-          <a href="https://github.com/nanyx-lang/packages#the-format" class="text-sm text-primary hover:underline">Index format</a>
-        </div>
-        {entries.length === 0 ? (
-          <p class="rounded-xl border border-border p-6 text-muted-foreground">No packages have been indexed yet.</p>
-        ) : (
-          <div class="grid gap-4 md:grid-cols-2">
-            {entries.map((entry) => (
-              <article class="rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/30">
-                <div class="flex flex-wrap items-baseline justify-between gap-2">
-                  <h3 class="font-semibold"><a class="text-primary hover:underline" href={`${base}${entry.path}`}>{entry.name}</a></h3>
-                  <span class="rounded-md bg-accent px-2 py-1 text-xs font-medium text-accent-foreground">Latest: {entry.latest}</span>
-                </div>
-                <p class="mt-3 break-all text-sm text-muted-foreground"><a class="hover:text-foreground hover:underline" href={entry.repository}>{entry.repository}</a></p>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-    </main>
-  </body>
-</html>
+<Base title="Nanyx packages" description="Explore the Nanyx package index.">
+  <section class="relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5"></div>
+    <div class="relative mx-auto max-w-5xl px-6 pb-12 pt-16 md:pb-16 md:pt-24">
+      <p class="mb-3 text-sm font-medium text-primary">Nanyx ecosystem</p>
+      <h1 class="text-4xl font-bold tracking-tight md:text-5xl">Packages</h1>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
+        Explore packages for Nanyx. Find a package, read how to install it, or register your own.
+      </p>
+      <a href="https://github.com/nanyx-lang/packages#registering-a-package" class="mt-6 inline-flex rounded-lg bg-primary px-5 py-3 font-medium text-primary-foreground shadow-md shadow-primary/20 transition-colors hover:bg-primary/90">
+        Register a package
+      </a>
+    </div>
+  </section>
+  <section class="mx-auto max-w-5xl px-6 pb-24" aria-labelledby="packages-heading">
+    <div class="mb-5 flex items-baseline justify-between gap-4">
+      <h2 id="packages-heading" class="text-2xl font-semibold">Package index</h2>
+      <a href="https://github.com/nanyx-lang/packages#the-format" class="text-sm text-primary hover:underline">Index format</a>
+    </div>
+    {entries.length === 0 ? (
+      <p class="rounded-xl border border-border p-6 text-muted-foreground">No packages have been indexed yet.</p>
+    ) : (
+      <div class="grid gap-4 md:grid-cols-2">
+        {entries.map((entry) => (
+          <article class="rounded-xl border border-border bg-card p-6 transition-colors hover:border-primary/30">
+            <div class="flex flex-wrap items-baseline justify-between gap-2">
+              <h3 class="font-semibold"><a class="text-primary hover:underline" href={`${base}${entry.page}`}>{entry.name}</a></h3>
+              <span class="rounded-md bg-accent px-2 py-1 text-xs font-medium text-accent-foreground">Latest: {entry.latest}</span>
+            </div>
+            <p class="mt-3 break-all text-sm text-muted-foreground"><a class="hover:text-foreground hover:underline" href={entry.repository}>{entry.repository}</a></p>
+          </article>
+        ))}
+      </div>
+    )}
+  </section>
+</Base>

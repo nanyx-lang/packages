@@ -3,6 +3,7 @@ export default {
   content: ["./src/**/*.{astro,html,js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      fontFamily: { mono: ["\"JetBrains Mono\"", "monospace"] },
       colors: {
         border: "hsl(var(--border))",
         background: "hsl(var(--background))",
