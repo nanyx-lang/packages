@@ -36,3 +36,28 @@
   h1, h2, h3 { font-family: "Space Grotesk", system-ui, sans-serif; }
   code { font-family: "JetBrains Mono", monospace; }
 }
+
+/* A package's README, as rendered from its Markdown. */
+@layer components {
+  .readme { @apply break-words leading-relaxed; }
+  .readme > :first-child { @apply mt-0; }
+  .readme h1, .readme h2, .readme h3, .readme h4 { @apply mb-3 mt-8 font-semibold tracking-tight; }
+  .readme h1 { @apply text-2xl; }
+  .readme h2 { @apply border-b border-border pb-1 text-xl; }
+  .readme h3 { @apply text-lg; }
+  .readme h4 { @apply text-base; }
+  .readme p, .readme ul, .readme ol, .readme pre, .readme table, .readme blockquote, .readme details { @apply my-4; }
+  .readme ul { @apply list-disc pl-6; }
+  .readme ol { @apply list-decimal pl-6; }
+  .readme li + li { @apply mt-1; }
+  .readme a { @apply text-primary hover:underline; }
+  .readme img { @apply inline-block max-w-full; }
+  .readme hr { @apply my-6; }
+  .readme blockquote { @apply border-l-4 border-border pl-4 text-muted-foreground; }
+  .readme :not(pre) > code { @apply rounded bg-muted px-1.5 py-0.5 text-[0.875em]; }
+  .readme pre { @apply overflow-x-auto rounded-lg border border-border bg-muted p-4 text-sm leading-normal; }
+  .readme table { @apply block overflow-x-auto text-sm; }
+  .readme th, .readme td { @apply border border-border px-3 py-1.5 text-left; }
+  .readme th { @apply bg-muted font-semibold; }
+  .readme summary { @apply cursor-pointer font-medium; }
+}
