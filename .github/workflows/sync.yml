@@ -65,8 +65,11 @@ jobs:
           git pull --rebase origin main
           git push origin HEAD:main
           echo "changed=true" >> "$GITHUB_OUTPUT"
+      # Package pages read each repository's description from GitHub's API, and its README.
       - name: Build the site
         run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
