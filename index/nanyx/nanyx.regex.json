@@ -1,0 +1,15 @@
+{
+  "name": "nanyx.regex",
+  "repository": "https://github.com/nanyx-lang/regex",
+  "versions": [
+    {
+      "version": "0.1.0",
+      "url": "https://github.com/nanyx-lang/regex/releases/download/v0.1.0/nanyx.regex-0.1.0.nyxpkg",
+      "sha256": "cfd6546ec4ee6c23450c633072b7a35ef6b02cbc1a6ec4e247b6ad4346880e91",
+      "nanyx": null,
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
+    }
+  ]
+}
