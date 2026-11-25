@@ -64,6 +64,15 @@
       "dependencies": {},
       "unlisted": false,
       "available": true
+    },
+    {
+      "version": "0.4.2",
+      "url": "https://github.com/nanyx-lang/json/releases/download/v0.4.2/nanyx.json-0.4.2.nyxpkg",
+      "sha256": "75cac5b03616baff87c1671eced546eb2e53a712c0bcc4cf12bbe1198c54f167",
+      "nanyx": null,
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
     }
   ]
 }
