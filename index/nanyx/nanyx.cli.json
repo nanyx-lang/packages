@@ -28,6 +28,15 @@
       "dependencies": {},
       "unlisted": false,
       "available": true
+    },
+    {
+      "version": "0.45.0",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.45.0/nanyx.cli-0.45.0.nyxpkg",
+      "sha256": "916a109dc437e73c34d8055260579fc03bfdda1c7b98a4c8232914acdcd2c3f8",
+      "nanyx": "0.45",
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
     }
   ]
 }
