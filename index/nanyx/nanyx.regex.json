@@ -19,6 +19,15 @@
       "dependencies": {},
       "unlisted": false,
       "available": true
+    },
+    {
+      "version": "0.1.2",
+      "url": "https://github.com/nanyx-lang/regex/releases/download/v0.1.2/nanyx.regex-0.1.2.nyxpkg",
+      "sha256": "0cdf255ce8bdc63dd9d8fe495efac85197f2c5d42310d56530be5d22dd5c32c5",
+      "nanyx": "0.43",
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
     }
   ]
 }
