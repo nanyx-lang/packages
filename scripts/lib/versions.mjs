@@ -2,9 +2,13 @@
 
 const VERSION = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/;
 
-/** The version a release tag names (`v1.2.0` or `1.2.0`), or null if the tag isn't a version. */
+/**
+ * The version a release tag names (`v1.2.0` or `1.2.0`, perhaps after a prefix that ends in `/`, as the compiler's
+ * releases, `compiler/0.43.0`, which carry the packages it ships), or null if the tag isn't a version.
+ */
 export function versionOfTag(tag) {
-  const version = tag.startsWith("v") ? tag.slice(1) : tag;
+  const last = tag.slice(tag.lastIndexOf("/") + 1);
+  const version = last.startsWith("v") ? last.slice(1) : last;
   return VERSION.test(version) ? version : null;
 }
 

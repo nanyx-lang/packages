@@ -40,6 +40,10 @@ test("a tag names a version with or without a v", () => {
   assert.equal(versionOfTag("1.2.0-beta.1"), "1.2.0-beta.1");
   assert.equal(versionOfTag("release-1"), null);
   assert.equal(versionOfTag("v1.2"), null);
+  // A prefix ending in `/`, as the compiler's releases, which carry the packages it ships, are tagged.
+  assert.equal(versionOfTag("compiler/0.43.0"), "0.43.0");
+  assert.equal(versionOfTag("compiler/v0.43.0"), "0.43.0");
+  assert.equal(versionOfTag("compiler/latest"), null);
 });
 
 test("versions sort as semantic versions", () => {

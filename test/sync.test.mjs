@@ -280,3 +280,19 @@ test("a version's old \"yanked\" is read as \"unlisted\" and written as it", asy
   assert.deepEqual(result.index.versions, [recorded("1.0.0", "a".repeat(64), { unlisted: true }), recorded("1.1.0", "b".repeat(64))]);
   assert.deepEqual(Object.keys(result.index.versions[0]), ["version", "url", "sha256", "nanyx", "dependencies", "unlisted", "available"]);
 });
+
+test("a release whose tag has a prefix, carrying several packages' assets, records the package's own", async () => {
+  const tag = "compiler/1.3.0";
+  const bytes = makePackage("acme.web", "1.3.0");
+  const result = await syncPackage({
+    registration,
+    index: null,
+    releases: [release(tag, [["acme.cli-1.3.0.nyxpkg", url(tag, "1.3.0").replace("acme.web-", "acme.cli-")], ["acme.web-1.3.0.nyxpkg", url(tag, "1.3.0")]])],
+    download: downloads({ [url(tag, "1.3.0")]: bytes }),
+  });
+  assert.deepEqual(result.reports, []);
+  assert.deepEqual(
+    result.index.versions.map((v) => [v.version, v.url, v.sha256]),
+    [["1.3.0", url(tag, "1.3.0"), sha256(bytes)]],
+  );
+});
