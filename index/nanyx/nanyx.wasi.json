@@ -56,6 +56,17 @@
       },
       "unlisted": false,
       "available": true
+    },
+    {
+      "version": "0.47.0",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.47.0/nanyx.wasi-0.47.0.nyxpkg",
+      "sha256": "272087a48ebb8e8504c84d19af95f27e4d2fa70afbb0bdad16d3cf5e8ee23181",
+      "nanyx": "=0.47.0",
+      "dependencies": {
+        "nanyx.http": "0.47.0"
+      },
+      "unlisted": false,
+      "available": true
     }
   ]
 }
