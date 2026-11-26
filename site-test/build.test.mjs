@@ -37,7 +37,7 @@ test("each package has a page with its versions, downloads, installation and ind
     assert.ok(html.includes(`href="${entry.repository}"`), "the page links to the repository");
     assert.ok(html.includes(`nanyx install ${entry.name}`));
     const shown = entry.versions.find((version) => version.latest) ?? entry.versions[0];
-    assert.ok(html.includes(`::dependency ${entry.name} ${shown.version}`));
+    assert.ok(html.includes(`::install ${entry.name} ${shown.version}`));
     for (const version of entry.versions) {
       assert.ok(html.includes(`>${version.version}<`), `${entry.name} ${version.version} is listed`);
       if (version.available) assert.ok(html.includes(`href="${version.url}"`), `${entry.name} ${version.version} can be downloaded`);
