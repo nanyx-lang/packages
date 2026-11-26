@@ -1,5 +1,20 @@
 {
   "name": "nanyx.cli.host",
   "repository": "https://github.com/nanyx-lang/nanyx",
-  "versions": []
+  "versions": [
+    {
+      "version": "0.43.0",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.43.0/nanyx.cli.host-0.43.0.nyxpkg",
+      "sha256": "4db6a6b21e3d033844893227947c56beb456d132753f864da9d98580bfe2f2cf",
+      "nanyx": "0.43",
+      "dependencies": {
+        "nanyx.cli": "0.43.0",
+        "nanyx.fs": "0.43.0",
+        "nanyx.http": "0.43.0",
+        "nanyx.wasi": "0.43.0"
+      },
+      "unlisted": false,
+      "available": true
+    }
+  ]
 }
