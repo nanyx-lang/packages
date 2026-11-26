@@ -70,7 +70,9 @@ A client checks the hash of everything it downloads against `sha256`, and refuse
 
 A version is a release of the package's repository that has:
 
-- a tag naming the version: `v1.2.0` or `1.2.0`. Other tags are ignored.
+- a tag naming the version: `v1.2.0` or `1.2.0`, perhaps after a prefix that ends in `/`, as `compiler/0.43.0`. Other
+  tags are ignored. A repository with several packages, such as `nanyx-lang/nanyx`, whose compiler releases carry the
+  packages the compiler ships, registers each of them, and a release carries the asset of each version it makes.
 - an asset named `<name>-<version>.nyxpkg`, such as `acme.web-1.2.0.nyxpkg`. Releases without it are ignored.
 
 Make the asset with `nanyx pack`, which writes `<name>-<version>.nyxpkg`: a zip of the package's `.nyxp` manifest,
