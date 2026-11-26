@@ -10,6 +10,15 @@
       "dependencies": {},
       "unlisted": false,
       "available": true
+    },
+    {
+      "version": "0.44.0",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.44.0/nanyx.http-0.44.0.nyxpkg",
+      "sha256": "e44f07d5c47e700e33c01e96566e87ffe07de0636e60187d6b40ff812b3fb8f7",
+      "nanyx": "0.44",
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
     }
   ]
 }
