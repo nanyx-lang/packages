@@ -38,6 +38,14 @@ export function packages(root) {
     });
 }
 
+/**
+ * The compilers a version builds with, as its `nanyx` writes them: `0.43`, that compiler or a later one, or `=0.43.0`,
+ * that compiler only, as a host does.
+ */
+export function compilersOf(nanyx) {
+  return nanyx.startsWith("=") ? `Nanyx ${nanyx.slice(1)} only` : `Nanyx ${nanyx} or later`;
+}
+
 /** The release tag a version's asset was downloaded from, from its address, or else `v<version>`. */
 export function tagOf(version) {
   const match = /\/releases\/download\/([^/]+)\//.exec(version.url ?? "");

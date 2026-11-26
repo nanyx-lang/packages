@@ -1,6 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { packages, tagOf } from "../../lib/packages.mjs";
+import { compilersOf, packages, tagOf } from "../../lib/packages.mjs";
 import { readDescription, readReadme } from "../../lib/readme.mjs";
 
 export async function getStaticPaths() {
@@ -75,7 +75,7 @@ const badge = "rounded-md px-2 py-0.5 text-xs font-medium";
               </div>
               {(version.nanyx || Object.keys(version.dependencies ?? {}).length > 0) && (
                 <p class="mt-1 text-xs text-muted-foreground">
-                  {version.nanyx && <span>Nanyx {version.nanyx} or later</span>}
+                  {version.nanyx && <span>{compilersOf(version.nanyx)}</span>}
                   {version.nanyx && Object.keys(version.dependencies ?? {}).length > 0 && <span> · </span>}
                   {Object.keys(version.dependencies ?? {}).length > 0 && (
                     <span>Depends on {Object.entries(version.dependencies).map(([name, requirement]) => `${name} ${requirement}`).join(", ")}</span>

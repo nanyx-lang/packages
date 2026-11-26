@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { packages, tagOf } from "../src/lib/packages.mjs";
+import { compilersOf, packages, tagOf } from "../src/lib/packages.mjs";
 import { renderReadme } from "../src/lib/readme.mjs";
 
 test("package listing keeps index order and selects the last available, listed version", (t) => {
@@ -57,6 +57,11 @@ test("a package's versions are listed newest first, each marked, with its asset'
   assert.equal(tagOf(entry.versions[1]), "1.2.0");
   assert.equal(tagOf(entry.versions[3]), "v1.0.0");
   assert.equal(tagOf(entry.versions[2]), "v1.1.0");
+});
+
+test("a version's nanyx names that compiler or later, or with = that compiler only", () => {
+  assert.equal(compilersOf("0.43"), "Nanyx 0.43 or later");
+  assert.equal(compilersOf("=0.43.0"), "Nanyx 0.43.0 only");
 });
 
 test("a README is rendered without scripts or handlers, with relative links and images in the repository at the tag", () => {
