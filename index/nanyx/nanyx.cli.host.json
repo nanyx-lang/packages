@@ -155,6 +155,20 @@
       },
       "unlisted": false,
       "available": true
+    },
+    {
+      "version": "0.52.0",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.52.0/nanyx.cli.host-0.52.0.nyxpkg",
+      "sha256": "8af8bfc36e92a526fd547187596744be7e8bf44f1497e3dbbdb5d0525739d7ba",
+      "nanyx": "=0.52.0",
+      "dependencies": {
+        "nanyx.cli": "0.52.0",
+        "nanyx.fs": "0.52.0",
+        "nanyx.http": "0.52.0",
+        "nanyx.wasi": "0.52.0"
+      },
+      "unlisted": false,
+      "available": true
     }
   ]
 }
