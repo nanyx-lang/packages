@@ -109,6 +109,24 @@
       "dependencies": {},
       "unlisted": false,
       "available": true
+    },
+    {
+      "version": "0.52.1",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.52.1/nanyx.http-0.52.1.nyxpkg",
+      "sha256": "e02a73eba4c36ce5e28b7377d6d4d34a1eeff61b9eb82ea00f4cad0b14f066a1",
+      "nanyx": "0.52",
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
+    },
+    {
+      "version": "0.53.0",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.53.0/nanyx.http-0.53.0.nyxpkg",
+      "sha256": "259af8b1cb4c6ad23203b562455a32d388aabce3e7ff154cefbcdbe5e1619b65",
+      "nanyx": "0.53",
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
     }
   ]
 }
