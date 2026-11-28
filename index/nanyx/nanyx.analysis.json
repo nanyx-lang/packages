@@ -1,0 +1,15 @@
+{
+  "name": "nanyx.analysis",
+  "repository": "https://github.com/nanyx-lang/nanyx",
+  "versions": [
+    {
+      "version": "0.54.0",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.54.0/nanyx.analysis-0.54.0.nyxpkg",
+      "sha256": "7892a2dffddb64708aec2aa4f9bcadba78c22a165ae6a330f7b5e3783b0c53e9",
+      "nanyx": "0.54",
+      "dependencies": {},
+      "unlisted": false,
+      "available": true
+    }
+  ]
+}

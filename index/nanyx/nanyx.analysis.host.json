@@ -1,0 +1,17 @@
+{
+  "name": "nanyx.analysis.host",
+  "repository": "https://github.com/nanyx-lang/nanyx",
+  "versions": [
+    {
+      "version": "0.54.0",
+      "url": "https://github.com/nanyx-lang/nanyx/releases/download/compiler/0.54.0/nanyx.analysis.host-0.54.0.nyxpkg",
+      "sha256": "81f44c879e1b7310ff54d96895c787e6c16944b8ee3378413c70d0e297e502fd",
+      "nanyx": "=0.54.0",
+      "dependencies": {
+        "nanyx.analysis": "0.54.0"
+      },
+      "unlisted": false,
+      "available": true
+    }
+  ]
+}
